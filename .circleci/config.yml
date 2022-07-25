@@ -1,0 +1,8 @@
+version: 2.1
+
+job:
+  build:
+    docker:
+      - image: cimg/base:stable
+    - step:
+      run: curl -sL firebase.tools | bash
