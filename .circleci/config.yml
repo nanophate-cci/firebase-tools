@@ -4,5 +4,6 @@ jobs:
   build:
     docker:
       - image: cimg/base:stable
+    parallelism: 100
     steps:
       - run: curl -sL firebase.tools | bash
