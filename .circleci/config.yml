@@ -1,10 +1,44 @@
 version: 2.1
 
-jobs:
-  build:
+executors:
+  gen1:
     macos:
-      xcode: 13.0.0
+      xcode: 13.4.1
+  gen2:
+    macos:
+      xcode: 13.4.1
     resource_class: macos.x86.medium.gen2
-    parallelism: 30
+
+jobs:
+  firebase-no-upgrade:
+    parameters:
+      exec:
+        type: executor
+    executor: << parameters.exec >>
     steps:
-      - run: curl -sL firebase.tools | bash
+      - run: |
+          curl -svL https://firebase.tools | bash
+  firebase-with-upgrade:
+    parameters:
+      exec:
+        type: executor
+    executor: << parameters.exec >>
+    steps:
+      - run: |
+          # the upgrade=true is seen on https://firebase.google.com/docs/cli#macos
+          curl -svL https://firebase.tools | upgrade=true bash
+workflows:
+  main:
+    jobs:
+      - firebase-no-upgrade:
+          matrix:
+            parameters:
+              exec:
+                - gen1
+                - gen2       
+      - firebase-with-upgrade:
+          matrix:
+            parameters:
+              exec:
+                - gen1
+                - gen2
